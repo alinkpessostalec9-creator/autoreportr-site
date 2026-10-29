@@ -1,0 +1,42 @@
+METTRE EN LIGNE LA PAGE AUTOREPORTR
+===================================
+
+Lien final : https://alinkpessostalec9-creator.github.io/autoreportr-site/
+
+1. DÉZIPPER
+   Dézippez le fichier dans C:\xampp\htdocs\
+   Vous obtenez le dossier : C:\xampp\htdocs\autoreportr-site
+
+2. OUVRIR DANS VS CODE
+   VS Code > Fichier > Ouvrir le dossier... > choisissez "autoreportr-site"
+   Pour voir la page : double-cliquez sur index.html dans l'explorateur Windows
+   (ou, dans VS Code, clic droit sur index.html > "Open with Live Server").
+
+3. CRÉER LE DÉPÔT SUR GITHUB
+   Sur github.com : bouton "New" (nouveau dépôt)
+   - Nom : autoreportr-site
+   - Public
+   - Ne cochez PAS "Add a README"
+   - Create repository
+
+4. ENVOYER LES FICHIERS (terminal de VS Code : Terminal > Nouveau terminal)
+   Copiez ces lignes une par une :
+
+   git init
+   git add .
+   git commit -m "Page de présentation AutoReportR"
+   git branch -M main
+   git remote add origin https://github.com/alinkpessostalec9-creator/autoreportr-site.git
+   git push -u origin main
+
+5. ACTIVER LE SITE
+   Sur GitHub, dans le dépôt autoreportr-site :
+   Settings > Pages > Source : "Deploy from a branch"
+   Branch : main  /  dossier : / (root)  > Save
+   Attendez 1 à 2 minutes, puis ouvrez le lien final ci-dessus.
+
+6. METTRE À JOUR PLUS TARD
+   Après une modification, dans le terminal de VS Code :
+   git add .
+   git commit -m "Mise à jour"
+   git push

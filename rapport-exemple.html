@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Rapport d'analyse statistique - AutoReportR v2.0</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 35px 20px;
+    background-color: #f5f5f0;
+    color: #2c3e50;
+  }
+  .header {
+    background: white;
+    border-radius: 8px;
+    padding: 30px 35px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-bottom: 3px solid #2980b9;
+    transition: all 0.3s ease;
+  }
+  .header:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a252f;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+  }
+  .doc-meta {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-top: 12px;
+  }
+  .version-badge {
+    display: inline-block;
+    background: #2980b9;
+    color: white;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    color: #2980b9;
+    border-left: 4px solid #2980b9;
+    padding-left: 12px;
+    margin-top: 35px;
+    margin-bottom: 18px;
+    transition: all 0.3s ease;
+  }
+  h2:hover {
+    padding-left: 20px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a252f;
+    background-color: #eef2f7;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+  }
+  h3:hover {
+    background-color: #e0e8f0;
+    transform: translateX(5px);
+  }
+  .card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px 25px;
+    margin: 15px 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+  .card.blue { border-left: 4px solid #2980b9; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+  }
+  .stat-box {
+    background: #f8f9fa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 14px 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .stat-box:hover {
+    transform: translateY(-5px);
+    border-color: #2980b9;
+    box-shadow: 0 8px 20px rgba(41,128,185,0.15);
+    background: white;
+  }
+  .stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2980b9;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0;
+    background: white;
+    font-size: 13px;
+    font-family: 'Times New Roman', Times, serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th {
+    background-color: #2980b9;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+  }
+  tr:hover td {
+    background-color: #f1f5f9;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  .badge-num { background: #2980b9; color: white; }
+  .badge-cat { background: #e67e22; color: white; }
+  .mode-tag, .exaequo-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+  }
+  .mode-tag { background: #2980b9; color: white; }
+  .exaequo-tag { background: #e67e22; color: white; }
+  .interp {
+    background: #f0f7ff;
+    border-left: 4px solid #2980b9;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+  }
+  .interp:hover {
+    background: #e5f0ff;
+    transform: translateX(5px);
+  }
+  .interp-title {
+    font-weight: 700;
+    font-size: 11px;
+    color: #2980b9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .synthesis {
+    background: #e8f5e9;
+    border-left: 4px solid #27ae60;
+    padding: 20px 25px;
+    margin: 20px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .synthesis:hover {
+    background: #dff0e0;
+    transform: translateX(5px);
+  }
+  .synthesis h3 {
+    background: none;
+    color: #27ae60;
+    padding: 0 0 10px 0;
+    margin-top: 0;
+  }
+  .note {
+    font-size: 11px;
+    color: #95a5a6;
+    font-style: italic;
+    margin-top: 10px;
+  }
+  hr {
+    margin: 25px 0;
+    border: none;
+    height: 1px;
+    background: #ddd;
+  }
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #95a5a6;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+  .overflow-x { overflow-x: auto; }
+  @media (max-width: 768px) {
+    body { padding: 20px 15px; }
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+    .stat-val { font-size: 18px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+
+</head><body>
+<div class='header'>
+<h1>
+Rapport d'analyse statistique
+<span class='version-badge'>v2.0</span></h1>
+<div class='doc-meta'>Auteur : <strong>
+Stalec ALINKPESSO
+</strong> | Date : <strong>
+29 octobre 2026
+</strong> | AutoReportR</div></div>
+<h2>1. Présentation des données</h2>
+<div class='card blue'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Observations</div></div>
+<div class='stat-box'><div class='stat-val'>5</div><div class='stat-lbl'>Variables</div></div>
+<div class='stat-box'><div class='stat-val'>100%</div><div class='stat-lbl'>Complétude</div></div>
+<div class='stat-box'><div class='stat-val'>Non</div><div class='stat-lbl'>Valeurs manquantes</div></div>
+</div>
+<div style='margin-top: 10px;'>
+<strong>Résumé :</strong> L'analyse porte sur 
+150
+ observations et 
+5
+ variables. 
+1 lignes en double détectées. 
+</div></div>
+<h2>2. Types de variables</h2>
+<div class='card'>
+<div class='overflow-x'>
+<table>
+<thead><tr><th>Type</th><th>Nombre</th><th>Variables</th></tr></thead><tbody>
+<tr><td><strong>categorielle</strong></td><td>1</td><td>Species</td></tr>
+<tr><td><strong>numerique continu</strong></td><td>4</td><td>Sepal.Length, Sepal.Width, Petal.Length, Petal.Width</td></tr>
+</tbody></table></div></div>
+<h2>4. Analyse détaillée</h2>
+<h3>
+Sepal.Length
+ <span class='badge badge-
+num
+'>
+NUMERIQUE
+</span></h3>
+<div class='card'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Effectif</div></div>
+<div class='stat-box'><div class='stat-val'>5.84</div><div class='stat-lbl'>Moyenne</div></div>
+<div class='stat-box'><div class='stat-val'>5.8</div><div class='stat-lbl'>Médiane</div></div>
+<div class='stat-box'><div class='stat-val'>0.83</div><div class='stat-lbl'>Ecart-type</div></div>
+<div class='stat-box'><div class='stat-val'>4.3</div><div class='stat-lbl'>Minimum</div></div>
+<div class='stat-box'><div class='stat-val'>7.9</div><div class='stat-lbl'>Maximum</div></div>
+</div>
+</div><hr>
+<h3>
+Sepal.Width
+ <span class='badge badge-
+num
+'>
+NUMERIQUE
+</span></h3>
+<div class='card'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Effectif</div></div>
+<div class='stat-box'><div class='stat-val'>3.06</div><div class='stat-lbl'>Moyenne</div></div>
+<div class='stat-box'><div class='stat-val'>3</div><div class='stat-lbl'>Médiane</div></div>
+<div class='stat-box'><div class='stat-val'>0.44</div><div class='stat-lbl'>Ecart-type</div></div>
+<div class='stat-box'><div class='stat-val'>2</div><div class='stat-lbl'>Minimum</div></div>
+<div class='stat-box'><div class='stat-val'>4.4</div><div class='stat-lbl'>Maximum</div></div>
+</div>
+</div><hr>
+<h3>
+Petal.Length
+ <span class='badge badge-
+num
+'>
+NUMERIQUE
+</span></h3>
+<div class='card'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Effectif</div></div>
+<div class='stat-box'><div class='stat-val'>3.76</div><div class='stat-lbl'>Moyenne</div></div>
+<div class='stat-box'><div class='stat-val'>4.35</div><div class='stat-lbl'>Médiane</div></div>
+<div class='stat-box'><div class='stat-val'>1.77</div><div class='stat-lbl'>Ecart-type</div></div>
+<div class='stat-box'><div class='stat-val'>1</div><div class='stat-lbl'>Minimum</div></div>
+<div class='stat-box'><div class='stat-val'>6.9</div><div class='stat-lbl'>Maximum</div></div>
+</div>
+</div><hr>
+<h3>
+Petal.Width
+ <span class='badge badge-
+num
+'>
+NUMERIQUE
+</span></h3>
+<div class='card'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Effectif</div></div>
+<div class='stat-box'><div class='stat-val'>1.2</div><div class='stat-lbl'>Moyenne</div></div>
+<div class='stat-box'><div class='stat-val'>1.3</div><div class='stat-lbl'>Médiane</div></div>
+<div class='stat-box'><div class='stat-val'>0.76</div><div class='stat-lbl'>Ecart-type</div></div>
+<div class='stat-box'><div class='stat-val'>0.1</div><div class='stat-lbl'>Minimum</div></div>
+<div class='stat-box'><div class='stat-val'>2.5</div><div class='stat-lbl'>Maximum</div></div>
+</div>
+</div><hr>
+<h3>
+Species
+ <span class='badge badge-
+cat
+'>
+CATEGORIELLE
+</span></h3>
+<div class='card'>
+<div class='stats-grid'>
+<div class='stat-box'><div class='stat-val'>150</div><div class='stat-lbl'>Effectif total</div></div>
+<div class='stat-box'><div class='stat-val'>3</div><div class='stat-lbl'>Catégories</div></div>
+<div class='stat-box'><div class='stat-val'>0%</div><div class='stat-lbl'>Manquantes</div></div>
+</div>
+<div class='overflow-x'>
+<table>
+<thead><tr><th>Catégorie</th><th>Effectif</th><th>Pourcentage</th><th>% Cumulé</th></tr></thead><tbody>
+<tr><td>setosa <span class='exaequo-tag'>EX AEQUO</span></td><td>50</td><td>33.33%</td><td>33.33%</td><tr>
+<tr><td>versicolor <span class='exaequo-tag'>EX AEQUO</span></td><td>50</td><td>33.33%</td><td>66.66%</td><tr>
+<tr><td>virginica <span class='exaequo-tag'>EX AEQUO</span></td><td>50</td><td>33.33%</td><td>99.99%</td><tr>
+</tbody></table></div>
+</div><hr>
+<h2>5. Synthèse et points clés</h2>
+<div class='synthesis'>
+<h3>Ce qu'il faut retenir</h3>
+<p>
+La variable 'Petal.Width' présente une forte dispersion (coefficient de variation = 0.64). La variable 'Species' a 3 catégories ex aequo comme mode.
+</p>
+</div>
+<div class='footer'>Rapport généré par AutoReportR v2.0 | 
+29 octobre 2026
+</div>
+</body></html>
